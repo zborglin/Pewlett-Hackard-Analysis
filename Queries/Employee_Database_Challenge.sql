@@ -1,5 +1,3 @@
-
-
 -- Creating tables for PH-EmployeeDB
 CREATE TABLE departments (
 	dept_no VARCHAR(4) NOT NULL,
@@ -120,14 +118,23 @@ LEFT JOIN dept_emp as de
 ON ri.emp_no = de.emp_no
 WHERE de.to_date = ('9999-01-01');
 
+
+SELECT * FROM current_emp;
+
+
 -- Employee count by department number
-SELECT COUNT(ce.emp_no), de.dept_no
-INTO dept_retirement_count
-FROM current_emp as ce
-LEFT JOIN dept_emp as de
-ON ce.emp_no = de.emp_no
+SELECT COUNT(ce.emp_no), d.dept_no, d.dept_name
+--INTO dept_retirement_count_name
+FROM dept_emp as de
+	Left JOIN current_emp as ce
+		ON (de.emp_no = ce.emp_no)
+	Left JOIN departments as d
+		ON (d.dept_no = de.dept_no)
 GROUP BY de.dept_no
-ORDER BY de.dept_no;
+--ORDER BY de.dept_no;
+
+
+
 
 SELECT * FROM salaries
 ORDER BY to_date DESC;
@@ -204,5 +211,18 @@ FROM unique_titles as ut
 GROUP BY ut.title
 ORDER BY COUNT(ut.emp_no) DESC;
 
+-- Create table of employees eligible to participate in mentorship program
+SELECT DISTINCT ON (e.emp_no) e.emp_no, e.first_name, e.last_name, e.birth_date,
+		de.from_date, de.to_date,
+		ti.title
+INTO mentorship_eligibility
+FROM employees as e
+	INNER JOIN dept_emp as de
+		ON (e.emp_no = de.emp_no)
+	INNER JOIN titles as ti
+		on (e.emp_no = ti.emp_no)
+WHERE (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+	AND (de.to_date = '9999-01-01')	
+ORDER BY e.emp_no ASC
 
 
