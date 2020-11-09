@@ -193,3 +193,13 @@ INTO unique_titles
 FROM retirement_titles as r
 ORDER BY r.emp_no ASC, r.to_date DESC;
 
+-- Retrieve # of employees by most recent job title who are about to retire
+SELECT COUNT(ut.emp_no), ut.title
+INTO retiring_titles
+FROM unique_titles as ut
+-- LEFT JOIN dept_emp as de
+-- ON ce.emp_no = de.emp_no
+GROUP BY ut.title
+ORDER BY COUNT(ut.emp_no) DESC;
+
+
